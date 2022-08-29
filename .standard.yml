@@ -2,3 +2,11 @@
 #   https://github.com/testdouble/standard
 
 default_ignores: false
+format: progress
+fix: true
+parallel: true
+ignore:
+  - 'db/schema.rb'
+  - 'vendor/**/*'
+  - 'test/**/*':
+    - Layout/AlignHash
