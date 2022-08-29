@@ -25,7 +25,7 @@ only be performant if Redis is accessed through `localhost`. If we're involving 
 network, performance will tank to a probably unusable level.
 
 There are a few more caveats. We recommend you read the extensive notes at the top of the 
-`Redis` class before running this in production.
+[`Redis` class](https://github.com/wearemolecule/prometheus-client-data_stores-redis/blob/main/lib/prometheus/client/data_stores/redis.rb) before running this in production.
 
 ## Installation
 
