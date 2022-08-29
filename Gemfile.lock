@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     prometheus-client-data_stores-redis (0.1.0)
+      concurrent-ruby (~> 1.1)
 
 GEM
   remote: https://rubygems.org/
