@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require 'redis'
-require 'connection_pool'
-require 'examples/data_store_example'
+require "redis"
+require "connection_pool"
+require "examples/data_store_example"
 RSpec.describe Prometheus::Client::DataStores::Redis do
   it "has a version number" do
     expect(Prometheus::Client::DataStores::Redis::VERSION).not_to be nil
   end
 
   let(:pool) do
-    ConnectionPool.new(size: 5, timeout: 5) { Redis.new.tap{|r| r.select(13) } }
+    ConnectionPool.new(size: 5, timeout: 5) { Redis.new.tap { |r| r.select(13) } }
   end
   subject { described_class.new(connection_pool: pool) }
   let(:metric_store) { subject.for_metric(:metric_name, metric_type: :counter) }
@@ -24,42 +24,42 @@ RSpec.describe Prometheus::Client::DataStores::Redis do
   it "only accepts valid :aggregation as Metric Settings" do
     expect do
       subject.for_metric(:metric_name,
-                         metric_type: :counter,
-                         metric_settings: { aggregation: Prometheus::Client::DataStores::Redis::SUM })
+        metric_type: :counter,
+        metric_settings: {aggregation: Prometheus::Client::DataStores::Redis::SUM})
     end.not_to raise_error
 
     expect do
       subject.for_metric(:metric_name,
-                         metric_type: :counter,
-                         metric_settings: { aggregation: :invalid })
+        metric_type: :counter,
+        metric_settings: {aggregation: :invalid})
     end.to raise_error(Prometheus::Client::DataStores::Redis::InvalidStoreSettingsError)
 
     expect do
       subject.for_metric(:metric_name,
-                         metric_type: :counter,
-                         metric_settings: { some_setting: true })
+        metric_type: :counter,
+        metric_settings: {some_setting: true})
     end.to raise_error(Prometheus::Client::DataStores::Redis::InvalidStoreSettingsError)
   end
 
   it "sums values from different processes" do
     metric_store1 = subject.for_metric(:metric_name, metric_type: :counter)
     allow(metric_store1).to receive(:process_id).and_return(12345)
-    metric_store1.set(labels: { foo: "bar" }, val: 1)
-    metric_store1.set(labels: { foo: "baz" }, val: 7)
-    metric_store1.set(labels: { foo: "yyy" }, val: 3)
+    metric_store1.set(labels: {foo: "bar"}, val: 1)
+    metric_store1.set(labels: {foo: "baz"}, val: 7)
+    metric_store1.set(labels: {foo: "yyy"}, val: 3)
 
     metric_store2 = subject.for_metric(:metric_name, metric_type: :counter)
     allow(metric_store2).to receive(:process_id).and_return(23456)
-    metric_store2.set(labels: { foo: "bar" }, val: 3)
-    metric_store2.set(labels: { foo: "baz" }, val: 2)
-    metric_store2.set(labels: { foo: "zzz" }, val: 1)
+    metric_store2.set(labels: {foo: "bar"}, val: 3)
+    metric_store2.set(labels: {foo: "baz"}, val: 2)
+    metric_store2.set(labels: {foo: "zzz"}, val: 1)
 
     expect(metric_store2.all_values).to eq(
-                                          { foo: "bar" } => 4.0,
-                                          { foo: "baz" } => 9.0,
-                                          { foo: "yyy" } => 3.0,
-                                          { foo: "zzz" } => 1.0,
-                                          )
+      {foo: "bar"} => 4.0,
+      {foo: "baz"} => 9.0,
+      {foo: "yyy"} => 3.0,
+      {foo: "zzz"} => 1.0
+    )
 
     # Both processes should return the same value
     expect(metric_store1.all_values).to eq(metric_store2.all_values)
@@ -70,29 +70,29 @@ RSpec.describe Prometheus::Client::DataStores::Redis do
       metric_store1 = subject.for_metric(
         :metric_name,
         metric_type: :gauge,
-        metric_settings: { aggregation: :max }
+        metric_settings: {aggregation: :max}
       )
       allow(metric_store1).to receive(:process_id).and_return(12345)
-      metric_store1.set(labels: { foo: "bar" }, val: 1)
-      metric_store1.set(labels: { foo: "baz" }, val: 7)
-      metric_store1.set(labels: { foo: "yyy" }, val: 3)
+      metric_store1.set(labels: {foo: "bar"}, val: 1)
+      metric_store1.set(labels: {foo: "baz"}, val: 7)
+      metric_store1.set(labels: {foo: "yyy"}, val: 3)
 
       metric_store2 = subject.for_metric(
         :metric_name,
         metric_type: :gauge,
-        metric_settings: { aggregation: :max }
+        metric_settings: {aggregation: :max}
       )
       allow(metric_store2).to receive(:process_id).and_return(23456)
-      metric_store2.set(labels: { foo: "bar" }, val: 3)
-      metric_store2.set(labels: { foo: "baz" }, val: 2)
-      metric_store2.set(labels: { foo: "zzz" }, val: 1)
+      metric_store2.set(labels: {foo: "bar"}, val: 3)
+      metric_store2.set(labels: {foo: "baz"}, val: 2)
+      metric_store2.set(labels: {foo: "zzz"}, val: 1)
 
       expect(metric_store1.all_values).to eq(
-                                            { foo: "bar" } => 3.0,
-                                            { foo: "baz" } => 7.0,
-                                            { foo: "yyy" } => 3.0,
-                                            { foo: "zzz" } => 1.0,
-                                            )
+        {foo: "bar"} => 3.0,
+        {foo: "baz"} => 7.0,
+        {foo: "yyy"} => 3.0,
+        {foo: "zzz"} => 1.0
+      )
 
       # Both processes should return the same value
       expect(metric_store1.all_values).to eq(metric_store2.all_values)
@@ -104,29 +104,29 @@ RSpec.describe Prometheus::Client::DataStores::Redis do
       metric_store1 = subject.for_metric(
         :metric_name,
         metric_type: :gauge,
-        metric_settings: { aggregation: :min }
+        metric_settings: {aggregation: :min}
       )
       allow(metric_store1).to receive(:process_id).and_return(12345)
-      metric_store1.set(labels: { foo: "bar" }, val: 1)
-      metric_store1.set(labels: { foo: "baz" }, val: 7)
-      metric_store1.set(labels: { foo: "yyy" }, val: 3)
+      metric_store1.set(labels: {foo: "bar"}, val: 1)
+      metric_store1.set(labels: {foo: "baz"}, val: 7)
+      metric_store1.set(labels: {foo: "yyy"}, val: 3)
 
       metric_store2 = subject.for_metric(
         :metric_name,
         metric_type: :gauge,
-        metric_settings: { aggregation: :min }
+        metric_settings: {aggregation: :min}
       )
       allow(metric_store2).to receive(:process_id).and_return(23456)
-      metric_store2.set(labels: { foo: "bar" }, val: 3)
-      metric_store2.set(labels: { foo: "baz" }, val: 2)
-      metric_store2.set(labels: { foo: "zzz" }, val: 1)
+      metric_store2.set(labels: {foo: "bar"}, val: 3)
+      metric_store2.set(labels: {foo: "baz"}, val: 2)
+      metric_store2.set(labels: {foo: "zzz"}, val: 1)
 
       expect(metric_store1.all_values).to eq(
-                                            { foo: "bar" } => 1.0,
-                                            { foo: "baz" } => 2.0,
-                                            { foo: "yyy" } => 3.0,
-                                            { foo: "zzz" } => 1.0,
-                                            )
+        {foo: "bar"} => 1.0,
+        {foo: "baz"} => 2.0,
+        {foo: "yyy"} => 3.0,
+        {foo: "zzz"} => 1.0
+      )
 
       # Both processes should return the same value
       expect(metric_store1.all_values).to eq(metric_store2.all_values)

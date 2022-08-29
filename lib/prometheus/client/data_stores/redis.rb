@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'concurrent'
-require 'cgi'
+require "concurrent"
+require "cgi"
 module Prometheus
   module Client
     module DataStores
@@ -56,7 +56,7 @@ module Prometheus
         VERSION = "0.1.0"
         class InvalidStoreSettingsError < StandardError; end
         AGGREGATION_MODES = [MAX = :max, MIN = :min, SUM = :sum]
-        DEFAULT_METRIC_SETTINGS = { aggregation: SUM }
+        DEFAULT_METRIC_SETTINGS = {aggregation: SUM}
 
         def initialize(connection_pool:)
           @connection_pool = connection_pool
@@ -67,22 +67,22 @@ module Prometheus
           validate_metric_settings(settings)
 
           MetricStore.new(metric_name: metric_name,
-                          connection_pool: @connection_pool,
-                          metric_settings: settings)
+            connection_pool: @connection_pool,
+            metric_settings: settings)
         end
 
         private
 
         def validate_metric_settings(metric_settings)
           unless metric_settings.has_key?(:aggregation) &&
-            AGGREGATION_MODES.include?(metric_settings[:aggregation])
+              AGGREGATION_MODES.include?(metric_settings[:aggregation])
             raise InvalidStoreSettingsError,
-                  "Metrics need a valid :aggregation key"
+              "Metrics need a valid :aggregation key"
           end
 
           unless (metric_settings.keys - [:aggregation]).empty?
             raise InvalidStoreSettingsError,
-                  "Only :aggregation setting can be specified"
+              "Only :aggregation setting can be specified"
           end
         end
 
@@ -130,11 +130,11 @@ module Prometheus
               # Labels come as a query string, and CGI::parse returns arrays for each key
               # "foo=bar&x=y" => { "foo" => ["bar"], "x" => ["y"] }
               # Turn the keys back into symbols, and remove the arrays
-              labels = CGI::parse(labels_qs).map do |k, vs|
+              labels = CGI.parse(labels_qs).map do |k, vs|
                 [k.to_sym, vs.first]
               end.to_h
 
-              label_set = labels.reject { |k,_| k == :__pid }
+              label_set = labels.reject { |k, _| k == :__pid }
               acc[label_set] ||= []
               acc[label_set] << v.to_f # Value comes back from redis as String
             end
@@ -148,11 +148,11 @@ module Prometheus
           private
 
           def redis_key
-            @redis_key ||= "metric_#{ metric_name }"
+            @redis_key ||= "metric_#{metric_name}"
           end
 
           def hash_key(labels)
-            key = labels.map{|k,v| "#{CGI::escape(k.to_s)}=#{CGI::escape(v.to_s)}"}.join('&')
+            key = labels.map { |k, v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join("&")
             key << "&__pid=" << process_id.to_s
           end
 
@@ -169,7 +169,7 @@ module Prometheus
               values.min
             else
               raise InvalidStoreSettingsError,
-                    "Invalid Aggregation Mode: #{ @values_aggregation_mode }"
+                "Invalid Aggregation Mode: #{@values_aggregation_mode}"
             end
           end
         end
