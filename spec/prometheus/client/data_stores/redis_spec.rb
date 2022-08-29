@@ -8,8 +8,10 @@ RSpec.describe Prometheus::Client::DataStores::Redis do
     expect(Prometheus::Client::DataStores::Redis::VERSION).not_to be nil
   end
 
+  let(:host) { ENV["REDIS_HOST"] }
+  let(:port) { ENV["REDIS_PORT"] }
   let(:pool) do
-    ConnectionPool.new(size: 5, timeout: 5) { Redis.new.tap { |r| r.select(13) } }
+    ConnectionPool.new(size: 5, timeout: 5) { Redis.new(host: host, port: port).tap { |r| r.select(13) } }
   end
   subject { described_class.new(connection_pool: pool) }
   let(:metric_store) { subject.for_metric(:metric_name, metric_type: :counter) }
