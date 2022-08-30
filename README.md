@@ -62,7 +62,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/wearem
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://github.com/wearemolecule/prometheus-client-data_stores-redis/blob/main/LICENSE.txt).
-
-## Code of Conduct
-
-Everyone interacting in the Prometheus::Client::DataStores::Redis project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/prometheus-client-data_stores-redis/blob/main/CODE_OF_CONDUCT.md).
