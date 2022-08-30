@@ -4,7 +4,7 @@ require_relative "lib/prometheus/client/data_stores/version"
 
 Gem::Specification.new do |spec|
   spec.name = "prometheus-client-data_stores-redis"
-  spec.version = Prometheus::Client::DataStores::Version::REDIS_VERSION
+  spec.version = Prometheus::Client::DataStores::Version::VERSION
   spec.authors = ["Daniel Magliola", "Balaji Raghavan"]
   spec.email = ["dmagliola@crystalgears.com", "bala@molecule.io"]
 

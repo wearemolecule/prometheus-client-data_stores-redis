@@ -54,7 +54,7 @@ module Prometheus
       # The code could be modified so that this extra label is only added if the aggregation
       # mode is not SUM. However, this makes the code more complex for little actual gain.
       class Redis
-        VERSION = Version::REDIS_VERSION
+        VERSION = Version::VERSION
         class InvalidStoreSettingsError < StandardError; end
         AGGREGATION_MODES = [MAX = :max, MIN = :min, SUM = :sum]
         DEFAULT_METRIC_SETTINGS = {aggregation: SUM}
